@@ -1,10 +1,90 @@
 import logo from './logo.svg';
 import './App.css';
+import useWebSocket from 'react-use-websocket';
+import { useState } from 'react';
+var vlrAtual = 0
 
 function App() {
+  const [ticker,setTicker] = useState(0);
+  let [vlrAtual,setVlrAtual] = useState(0);
+  const [vlrAbertura,setVlrAbertura] = useState(0);
+  const [vlrMaior,setVlrMaior] = useState(0);
+  const [vlrMenor,setVlrMenor] = useState(0);
+  const { lastJsonMessage, sendMessage } = useWebSocket('ws://localhost:3001', {
+    onOpen: () => console.log(`Connected to App WS`),
+    onMessage: () => {
+      if (lastJsonMessage) {
+        let vlrAntigo = vlrAtual;
+
+        vlrAtual = Number.parseFloat(lastJsonMessage.quote.price).toLocaleString('pt-br', {
+          minimumFractionDigits: 2,
+          currency: 'BRL'
+        })
+        const vAnt = Number.parseFloat(vlrAntigo.replace(',','.')).toPrecision(4);
+        const vAtu= Number.parseFloat(vlrAtual.replace(',','.')).toPrecision(4) ;
+
+        // alert(vAtu);
+        // alert(vAnt);
+        // alert(vAtu > vAnt);
+
+        if(vAtu > vAnt) {
+          document.getElementById('fontColor').style.color ='rgba(34,139,34)';
+        }else if( vAtu == vAnt){
+          document.getElementById('fontColor').style.color ='rgba(0,206,209)';
+        } else{
+          document.getElementById('fontColor').style.color ='rgba(165,42,42)';
+        }
+        const vlrAbertura = Number.parseFloat(lastJsonMessage.quote.open).toLocaleString('pt-br', {
+          minimumFractionDigits: 2,
+          currency: 'BRL'
+        })
+        const vlrMaior = Number.parseFloat(lastJsonMessage.quote.high).toLocaleString('pt-br', {
+          minimumFractionDigits: 2,
+          currency: 'BRL'
+        })
+        const vlrMenor = Number.parseFloat(lastJsonMessage.quote.low).toLocaleString('pt-br', {
+          minimumFractionDigits: 2,
+          currency: 'BRL'
+        })
+        setTicker(lastJsonMessage.ticker);
+        setVlrAtual(vlrAtual);
+        setVlrAbertura(vlrAbertura);
+        setVlrMaior(vlrMaior);
+        setVlrMenor(vlrMenor);
+      }
+
+      function random_rgba() {
+        var o = Math.round,
+            r = Math.random,
+            s = 255;
+        return 'rgba(' + o(r() * s) + ',' + o(r() * s) + ',' + o(r() * s) + ',' + r().toFixed(1) + ')';
+      };
+    },
+    queryParams: { 'token': '123456' },
+    onError: (event) => { console.error(event); },
+    shouldReconnect: (closeEvent) => true,
+    reconnectInterval: 3000
+  });
   return (
     <div className="App">
       <header className="App-header">
+        <table id="principal" border="1" width="50%" class="table">
+          <tr>
+            <th>Código</th>
+            <th>Valor atual</th>
+            <th>Valor abertura</th>
+            <th>Maior valor</th>
+            <th>Menor valor</th>
+          </tr>
+          <tr class="active">
+            <td>{ticker}</td>
+            <td><font id="fontColor">{vlrAtual}</font></td>
+            <td>{vlrAbertura}</td>
+            <td>{vlrMaior}</td>
+            <td>{vlrMenor}</td>
+          </tr>
+        </table>
+        {/*<h className="App-link" > {ticker}: R$ {numero} </h>*/}
         <img src={logo} className="App-logo" alt="logo" />
         <p>
           Edit <code>src/App.js</code> and save to reload.
