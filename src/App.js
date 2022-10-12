@@ -2,7 +2,6 @@ import logo from './logo.svg';
 import './App.css';
 import useWebSocket from 'react-use-websocket';
 import { useState } from 'react';
-var vlrAtual = 0
 
 function App() {
   const [id,setId] = useState(0);
@@ -16,14 +15,14 @@ function App() {
     onMessage: () => {
 
       if (lastJsonMessage) {
-        let vlrAntigo = vlrAtual;
-
-        vlrAtual = Number.parseFloat(lastJsonMessage.quote.price).toLocaleString('pt-br', {
+        // let vlrAntigo = vlrAtual;
+        //
+        const vlrAtual = Number.parseFloat(lastJsonMessage.quote.price).toLocaleString('pt-br', {
           minimumFractionDigits: 2,
           currency: 'BRL'
         })
-        const vAnt = Number.parseFloat(vlrAntigo.replace(',','.')).toPrecision(4);
-        const vAtu= Number.parseFloat(vlrAtual.replace(',','.')).toPrecision(4) ;
+        // const vAnt = Number.parseFloat(vlrAntigo.replace(',','.')).toPrecision(4);
+        // const vAtu= Number.parseFloat(vlrAtual.replace(',','.')).toPrecision(4) ;
 
         // alert(vAtu);
         // alert(vAnt);
@@ -104,22 +103,45 @@ function App() {
 //Funcao adiciona uma nova linha na tabela
 function adicionaLinha(idTabela, id, ticker, vlrAtual, vlrAbertura, vlrMaior, vlrMenor) {
   var tabela = document.getElementById(idTabela);
+  var existRow = document.getElementById(id);
 
-  if(tabela && id !== 0) {
+  if(tabela && vlrAtual !== 0 && !existRow) {
     var numeroLinhas = tabela.rows.length;
-    var linha = tabela.insertRow(numeroLinhas);
-    var celId           = linha.insertCell(0);
-    var celTicker       = linha.insertCell(1);
-    var celVlrAtual     = linha.insertCell(2);
-    var celVlrAbertura  = linha.insertCell(3);
-    var celVlrMaior     = linha.insertCell(4);
-    var celVlrMenor     = linha.insertCell(5);
-    celId.innerHTML = id;
-    celTicker.innerHTML =  ticker;
-    celVlrAtual.innerHTML =  vlrAtual;
-    celVlrAbertura.innerHTML = vlrAbertura;
-    celVlrMaior.innerHTML =  vlrMaior;
-    celVlrMenor.innerHTML =  vlrMenor;
+
+    if(id == 0 || (numeroLinhas > 1 && (id == numeroLinhas-1))){
+      var linha = tabela.insertRow(numeroLinhas);
+      linha.id = id;
+      var celId           = linha.insertCell(0);
+      var celTicker       = linha.insertCell(1);
+      var celVlrAtual     = linha.insertCell(2);
+      var celVlrAbertura  = linha.insertCell(3);
+      var celVlrMaior     = linha.insertCell(4);
+      var celVlrMenor     = linha.insertCell(5);
+      celId.innerHTML = id;
+      celTicker.innerHTML =  ticker;
+      celVlrAtual.innerHTML =  vlrAtual;
+      celVlrAtual.id = 'celVlrAtual'+'_'+id
+      celVlrAbertura.innerHTML = vlrAbertura;
+      celVlrMaior.innerHTML =  vlrMaior;
+      celVlrMenor.innerHTML =  vlrMenor;
+    }
+
+  } else if (existRow) {
+    var linha = document.getElementById(id);
+    const vAnt = Number.parseFloat(linha.childNodes[2].innerHTML.replace(',','.')).toPrecision(4);
+    const vAtu= Number.parseFloat(vlrAtual.replace(',','.')).toPrecision(4) ;
+
+    if(vAtu > vAnt) {
+      document.getElementById('celVlrAtual'+'_'+id).style.color ='rgba(34,139,34)';
+    }else if( vAtu == vAnt){
+      document.getElementById('celVlrAtual'+'_'+id).style.color ='rgba(0,206,209)';
+    } else{
+      document.getElementById('celVlrAtual'+'_'+id).style.color ='rgba(165,42,42)';
+    }
+    linha.childNodes[2].innerHTML =  vlrAtual;
+    linha.childNodes[3].innerHTML = vlrAbertura;
+    linha.childNodes[4].innerHTML =  vlrMaior;
+    linha.childNodes[5].innerHTML =  vlrMenor;
   }
 }
 
