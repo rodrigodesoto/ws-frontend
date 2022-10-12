@@ -15,26 +15,10 @@ function App() {
     onMessage: () => {
 
       if (lastJsonMessage) {
-        // let vlrAntigo = vlrAtual;
-        //
         const vlrAtual = Number.parseFloat(lastJsonMessage.quote.price).toLocaleString('pt-br', {
           minimumFractionDigits: 2,
           currency: 'BRL'
         })
-        // const vAnt = Number.parseFloat(vlrAntigo.replace(',','.')).toPrecision(4);
-        // const vAtu= Number.parseFloat(vlrAtual.replace(',','.')).toPrecision(4) ;
-
-        // alert(vAtu);
-        // alert(vAnt);
-        // alert(vAtu > vAnt);
-
-        // if(vAtu > vAnt) {
-        //   document.getElementById('fontColor').style.color ='rgba(34,139,34)';
-        // }else if( vAtu == vAnt){
-        //   document.getElementById('fontColor').style.color ='rgba(0,206,209)';
-        // } else{
-        //   document.getElementById('fontColor').style.color ='rgba(165,42,42)';
-        // }
         const vlrAbertura = Number.parseFloat(lastJsonMessage.quote.open).toLocaleString('pt-br', {
           minimumFractionDigits: 2,
           currency: 'BRL'
@@ -72,17 +56,8 @@ function App() {
             <th>Maior valor</th>
             <th>Menor valor</th>
           </tr>
-          {/*<tr class="active">*/}
-          {/*  <td>{id}</td>*/}
-          {/*  <td>{ticker}</td>*/}
-          {/*  <td><font id="fontColor">{vlrAtual}</font></td>*/}
-          {/*  <td>{vlrAbertura}</td>*/}
-          {/*  <td>{vlrMaior}</td>*/}
-          {/*  <td>{vlrMenor}</td>*/}
-          {/*</tr>*/}
           {adicionaLinha('principal', id, ticker, vlrAtual, vlrAbertura, vlrMaior, vlrMenor)}
         </table>
-        {/*<h className="App-link" > {ticker}: R$ {numero} </h>*/}
         <img src={logo} className="App-logo" alt="logo" />
         <p>
           Edit <code>src/App.js</code> and save to reload.
@@ -106,9 +81,7 @@ function adicionaLinha(idTabela, id, ticker, vlrAtual, vlrAbertura, vlrMaior, vl
   var existRow = document.getElementById(id);
 
   if(tabela && vlrAtual !== 0 && !existRow) {
-    var numeroLinhas = tabela.rows.length;
-
-    if(id == 0 || (numeroLinhas > 1 && (id == numeroLinhas-1))){
+      var numeroLinhas = tabela.rows.length;
       var linha = tabela.insertRow(numeroLinhas);
       linha.id = id;
       var celId           = linha.insertCell(0);
@@ -122,21 +95,52 @@ function adicionaLinha(idTabela, id, ticker, vlrAtual, vlrAbertura, vlrMaior, vl
       celVlrAtual.innerHTML =  vlrAtual;
       celVlrAtual.id = 'celVlrAtual'+'_'+id
       celVlrAbertura.innerHTML = vlrAbertura;
+      celVlrAbertura.id = 'celVlrAbertura'+'_'+id
       celVlrMaior.innerHTML =  vlrMaior;
+      celVlrMaior.id = 'celVlrMaior'+'_'+id
       celVlrMenor.innerHTML =  vlrMenor;
-    }
-
+      celVlrMenor.id = 'celVlrMenor'+'_'+id
   } else if (existRow) {
     var linha = document.getElementById(id);
-    const vAnt = Number.parseFloat(linha.childNodes[2].innerHTML.replace(',','.')).toPrecision(4);
-    const vAtu= Number.parseFloat(vlrAtual.replace(',','.')).toPrecision(4) ;
+    const vAntAtu = Number.parseFloat(linha.childNodes[2].innerHTML.replace(',','.')).toPrecision(4);
+    const vAtuAtu= Number.parseFloat(vlrAtual.replace(',','.')).toPrecision(4) ;
+    const vAntAbe = Number.parseFloat(linha.childNodes[3].innerHTML.replace(',','.')).toPrecision(4);
+    const vAtuAbe= Number.parseFloat(vlrAbertura.replace(',','.')).toPrecision(4) ;
+    const vAntMai = Number.parseFloat(linha.childNodes[4].innerHTML.replace(',','.')).toPrecision(4);
+    const vAtuMai= Number.parseFloat(vlrMaior.replace(',','.')).toPrecision(4) ;
+    const vAntMen = Number.parseFloat(linha.childNodes[5].innerHTML.replace(',','.')).toPrecision(4);
+    const vAtuMen= Number.parseFloat(vlrMenor.replace(',','.')).toPrecision(4) ;
 
-    if(vAtu > vAnt) {
+    if(vAtuAtu > vAntAtu) {
       document.getElementById('celVlrAtual'+'_'+id).style.color ='rgba(34,139,34)';
-    }else if( vAtu == vAnt){
+    }else if( vAtuAtu == vAntAtu){
       document.getElementById('celVlrAtual'+'_'+id).style.color ='rgba(0,206,209)';
     } else{
       document.getElementById('celVlrAtual'+'_'+id).style.color ='rgba(165,42,42)';
+    }
+
+    if(vAtuAbe > vAntAbe) {
+      document.getElementById('celVlrAbertura'+'_'+id).style.color ='rgba(34,139,34)';
+    }else if( vAtuAbe == vAntAbe){
+      document.getElementById('celVlrAbertura'+'_'+id).style.color ='rgba(0,206,209)';
+    } else{
+      document.getElementById('celVlrAbertura'+'_'+id).style.color ='rgba(165,42,42)';
+    }
+
+    if(vAtuMai > vAntMai) {
+      document.getElementById('celVlrMaior'+'_'+id).style.color ='rgba(34,139,34)';
+    }else if( vAtuMai == vAntMai){
+      document.getElementById('celVlrMaior'+'_'+id).style.color ='rgba(0,206,209)';
+    } else{
+      document.getElementById('celVlrMaior'+'_'+id).style.color ='rgba(165,42,42)';
+    }
+
+    if(vAtuMen > vAntMen) {
+      document.getElementById('celVlrMenor'+'_'+id).style.color ='rgba(34,139,34)';
+    }else if( vAtuMen == vAntMen){
+      document.getElementById('celVlrMenor'+'_'+id).style.color ='rgba(0,206,209)';
+    } else{
+      document.getElementById('celVlrMenor'+'_'+id).style.color ='rgba(165,42,42)';
     }
     linha.childNodes[2].innerHTML =  vlrAtual;
     linha.childNodes[3].innerHTML = vlrAbertura;
