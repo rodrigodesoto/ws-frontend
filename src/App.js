@@ -10,7 +10,7 @@ function App() {
   const [vlrAbertura,setVlrAbertura] = useState(0);
   const [vlrMaior,setVlrMaior] = useState(0);
   const [vlrMenor,setVlrMenor] = useState(0);
-  const { lastJsonMessage, sendMessage } = useWebSocket('ws://localhost:3001', {
+  const { lastJsonMessage, sendMessage } = useWebSocket('wss://ws-server-heroku.herokuapp.com/', {
     onOpen: () => console.log(`Connected to App WS`),
     onMessage: () => {
 
@@ -82,6 +82,8 @@ function adicionaLinha(idTabela, id, ticker, vlrAtual, vlrAbertura, vlrMaior, vl
 
   if(tabela && vlrAtual !== 0 && !existRow) {
       var numeroLinhas = tabela.rows.length;
+
+    if(id == 0 || numeroLinhas == id+1 ){
       var linha = tabela.insertRow(numeroLinhas);
       linha.id = id;
       var celId           = linha.insertCell(0);
@@ -100,6 +102,7 @@ function adicionaLinha(idTabela, id, ticker, vlrAtual, vlrAbertura, vlrMaior, vl
       celVlrMaior.id = 'celVlrMaior'+'_'+id
       celVlrMenor.innerHTML =  vlrMenor;
       celVlrMenor.id = 'celVlrMenor'+'_'+id
+    }
   } else if (existRow) {
     var linha = document.getElementById(id);
     const vAntAtu = Number.parseFloat(linha.childNodes[2].innerHTML.replace(',','.')).toPrecision(4);
@@ -111,37 +114,42 @@ function adicionaLinha(idTabela, id, ticker, vlrAtual, vlrAbertura, vlrMaior, vl
     const vAntMen = Number.parseFloat(linha.childNodes[5].innerHTML.replace(',','.')).toPrecision(4);
     const vAtuMen= Number.parseFloat(vlrMenor.replace(',','.')).toPrecision(4) ;
 
+    const objValAtu = document.getElementById('celVlrAtual'+'_'+id);
     if(vAtuAtu > vAntAtu) {
-      document.getElementById('celVlrAtual'+'_'+id).style.color ='rgba(34,139,34)';
-    }else if( vAtuAtu == vAntAtu){
-      document.getElementById('celVlrAtual'+'_'+id).style.color ='rgba(0,206,209)';
-    } else{
-      document.getElementById('celVlrAtual'+'_'+id).style.color ='rgba(165,42,42)';
+      objValAtu.style.color ='rgb(34,139,34)';
+    }else if( (vAtuAtu == vAntAtu) && (objValAtu.style.color != 'rgb(34, 139, 34)' && objValAtu.style.color != 'rgb(165, 42, 42)')){
+      objValAtu.style.color ='rgb(0,206,209)';
+    }else if (vAtuAtu < vAntAtu) {
+      objValAtu.style.color ='rgb(165,42,42)';
     }
 
+    const objValAbe = document.getElementById('celVlrAbertura'+'_'+id);
     if(vAtuAbe > vAntAbe) {
-      document.getElementById('celVlrAbertura'+'_'+id).style.color ='rgba(34,139,34)';
-    }else if( vAtuAbe == vAntAbe){
-      document.getElementById('celVlrAbertura'+'_'+id).style.color ='rgba(0,206,209)';
-    } else{
-      document.getElementById('celVlrAbertura'+'_'+id).style.color ='rgba(165,42,42)';
+      objValAbe.style.color ='rgb(34,139,34)';
+    }else if( (vAtuAbe == vAntAbe) && (objValAbe.style.color != 'rgb(34, 139, 34)' && objValAbe.style.color != 'rgb(165, 42, 42)')){
+      objValAbe.style.color ='rgb(0,206,209)';
+    }else if (vAtuAbe < vAntAbe) {
+      objValAbe.style.color ='rgb(165,42,42)';
     }
 
+    const objValMai = document.getElementById('celVlrMaior'+'_'+id);
     if(vAtuMai > vAntMai) {
-      document.getElementById('celVlrMaior'+'_'+id).style.color ='rgba(34,139,34)';
-    }else if( vAtuMai == vAntMai){
-      document.getElementById('celVlrMaior'+'_'+id).style.color ='rgba(0,206,209)';
-    } else{
-      document.getElementById('celVlrMaior'+'_'+id).style.color ='rgba(165,42,42)';
+      objValMai.style.color ='rgb(34,139,34)';
+    }else if( (vAtuMai == vAntMai) && (objValMai.style.color != 'rgb(34, 139, 34)' && objValMai.style.color != 'rgb(165, 42, 42)')){
+      objValMai.style.color ='rgb(0,206,209)';
+    }else if (vAtuMai < vAntMai) {
+      objValMai.style.color ='rgb(165,42,42)';
     }
 
+    const objValMen = document.getElementById('celVlrMenor'+'_'+id);
     if(vAtuMen > vAntMen) {
-      document.getElementById('celVlrMenor'+'_'+id).style.color ='rgba(34,139,34)';
-    }else if( vAtuMen == vAntMen){
-      document.getElementById('celVlrMenor'+'_'+id).style.color ='rgba(0,206,209)';
-    } else{
-      document.getElementById('celVlrMenor'+'_'+id).style.color ='rgba(165,42,42)';
+      objValMen.style.color ='rgb(34,139,34)';
+    }else if( (vAtuMen == vAntMen) && (objValMen.style.color != 'rgb(34, 139, 34)' && objValMen.style.color != 'rgb(165, 42, 42)')){
+      objValMen.style.color ='rgb(0,206,209)';
+    }else if (vAtuMen < vAntMen) {
+      objValMen.style.color ='rgb(165,42,42)';
     }
+
     linha.childNodes[2].innerHTML =  vlrAtual;
     linha.childNodes[3].innerHTML = vlrAbertura;
     linha.childNodes[4].innerHTML =  vlrMaior;
