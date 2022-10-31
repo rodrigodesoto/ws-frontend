@@ -6,7 +6,8 @@ import { useState } from 'react';
 function App() {
   const [id,setId] = useState(0);
   const [ticker,setTicker] = useState(0);
-  let [vlrAtual,setVlrAtual] = useState(0);
+  const [variacao,setVariacao] = useState(0);
+  const [vlrAtual,setVlrAtual] = useState(0);
   const [vlrAbertura,setVlrAbertura] = useState(0);
   const [vlrMaior,setVlrMaior] = useState(0);
   const [vlrMenor,setVlrMenor] = useState(0);
@@ -15,6 +16,10 @@ function App() {
     onMessage: () => {
 
       if (lastJsonMessage) {
+        const variacao = Number.parseFloat(lastJsonMessage.quote.marketChange).toLocaleString('pt-br', {
+          minimumFractionDigits: 2,
+          currency: 'BRL'
+        })
         const vlrAtual = Number.parseFloat(lastJsonMessage.quote.price).toLocaleString('pt-br', {
           minimumFractionDigits: 2,
           currency: 'BRL'
@@ -33,6 +38,7 @@ function App() {
         })
         setId(lastJsonMessage.id);
         setTicker(lastJsonMessage.ticker);
+        setVariacao(variacao);
         setVlrAtual(vlrAtual);
         setVlrAbertura(vlrAbertura);
         setVlrMaior(vlrMaior);
@@ -51,12 +57,13 @@ function App() {
           <tr>
             <th>Id</th>
             <th>Código</th>
+            <th>%</th>
             <th>Valor atual</th>
             <th>Valor abertura</th>
             <th>Maior valor</th>
             <th>Menor valor</th>
           </tr>
-          {adicionaLinha('principal', id, ticker, vlrAtual, vlrAbertura, vlrMaior, vlrMenor)}
+          {adicionaLinha('principal', id, ticker, variacao, vlrAtual, vlrAbertura, vlrMaior, vlrMenor)}
         </table>
         <img src={logo} className="App-logo" alt="logo" />
         <p>
@@ -76,7 +83,7 @@ function App() {
 }
 
 //Funcao adiciona uma nova linha na tabela
-function adicionaLinha(idTabela, id, ticker, vlrAtual, vlrAbertura, vlrMaior, vlrMenor) {
+function adicionaLinha(idTabela, id, ticker, variacao, vlrAtual, vlrAbertura, vlrMaior, vlrMenor) {
   var tabela = document.getElementById(idTabela);
   var existRow = document.getElementById(id);
 
@@ -88,12 +95,15 @@ function adicionaLinha(idTabela, id, ticker, vlrAtual, vlrAbertura, vlrMaior, vl
       linha.id = id;
       var celId           = linha.insertCell(0);
       var celTicker       = linha.insertCell(1);
-      var celVlrAtual     = linha.insertCell(2);
-      var celVlrAbertura  = linha.insertCell(3);
-      var celVlrMaior     = linha.insertCell(4);
-      var celVlrMenor     = linha.insertCell(5);
+      var celVariacao     = linha.insertCell(2);
+      var celVlrAtual     = linha.insertCell(3);
+      var celVlrAbertura  = linha.insertCell(4);
+      var celVlrMaior     = linha.insertCell(5);
+      var celVlrMenor     = linha.insertCell(6);
       celId.innerHTML = id;
       celTicker.innerHTML =  ticker;
+      celVariacao.innerHTML = variacao;
+      celVariacao.id = 'celVariacao'+'_'+id
       celVlrAtual.innerHTML =  vlrAtual;
       celVlrAtual.id = 'celVlrAtual'+'_'+id
       celVlrAbertura.innerHTML = vlrAbertura;
@@ -105,14 +115,25 @@ function adicionaLinha(idTabela, id, ticker, vlrAtual, vlrAbertura, vlrMaior, vl
     }
   } else if (existRow) {
     var linha = document.getElementById(id);
-    const vAntAtu = Number.parseFloat(linha.childNodes[2].innerHTML.replace(',','.')).toPrecision(4);
+    const vAntVar = Number.parseFloat(linha.childNodes[2].innerHTML.replace(',','.')).toPrecision(4);
+    const vAtuVar = Number.parseFloat(variacao.replace(',','.')).toPrecision(4) ;
+    const vAntAtu = Number.parseFloat(linha.childNodes[3].innerHTML.replace(',','.')).toPrecision(4);
     const vAtuAtu= Number.parseFloat(vlrAtual.replace(',','.')).toPrecision(4) ;
-    const vAntAbe = Number.parseFloat(linha.childNodes[3].innerHTML.replace(',','.')).toPrecision(4);
+    const vAntAbe = Number.parseFloat(linha.childNodes[4].innerHTML.replace(',','.')).toPrecision(4);
     const vAtuAbe= Number.parseFloat(vlrAbertura.replace(',','.')).toPrecision(4) ;
-    const vAntMai = Number.parseFloat(linha.childNodes[4].innerHTML.replace(',','.')).toPrecision(4);
+    const vAntMai = Number.parseFloat(linha.childNodes[5].innerHTML.replace(',','.')).toPrecision(4);
     const vAtuMai= Number.parseFloat(vlrMaior.replace(',','.')).toPrecision(4) ;
-    const vAntMen = Number.parseFloat(linha.childNodes[5].innerHTML.replace(',','.')).toPrecision(4);
+    const vAntMen = Number.parseFloat(linha.childNodes[6].innerHTML.replace(',','.')).toPrecision(4);
     const vAtuMen= Number.parseFloat(vlrMenor.replace(',','.')).toPrecision(4) ;
+
+    const objValVar = document.getElementById('celVariacao'+'_'+id);
+    if(vAtuVar > 0) {
+      objValVar.style.color ='rgb(34,139,34)';
+    }else if(vAtuVar == 0){
+      objValVar.style.color ='rgb(0,206,209)';
+    }else if (vAtuVar < 0) {
+      objValVar.style.color ='rgb(165,42,42)';
+    }
 
     const objValAtu = document.getElementById('celVlrAtual'+'_'+id);
     if(vAtuAtu > vAntAtu) {
@@ -150,10 +171,11 @@ function adicionaLinha(idTabela, id, ticker, vlrAtual, vlrAbertura, vlrMaior, vl
       objValMen.style.color ='rgb(165,42,42)';
     }
 
-    linha.childNodes[2].innerHTML =  vlrAtual;
-    linha.childNodes[3].innerHTML = vlrAbertura;
-    linha.childNodes[4].innerHTML =  vlrMaior;
-    linha.childNodes[5].innerHTML =  vlrMenor;
+    linha.childNodes[2].innerHTML =  variacao;
+    linha.childNodes[3].innerHTML =  vlrAtual;
+    linha.childNodes[4].innerHTML = vlrAbertura;
+    linha.childNodes[5].innerHTML =  vlrMaior;
+    linha.childNodes[6].innerHTML =  vlrMenor;
   }
 }
 
