@@ -11,31 +11,16 @@ function App() {
   const [vlrAbertura,setVlrAbertura] = useState(0);
   const [vlrMaior,setVlrMaior] = useState(0);
   const [vlrMenor,setVlrMenor] = useState(0);
-  const { lastJsonMessage, sendMessage } = useWebSocket('wss://ws-server-heroku.herokuapp.com/', {
+  const { lastJsonMessage, sendMessage } = useWebSocket('ws://localhost:3000/', {
     onOpen: () => console.log(`Connected to App WS`),
     onMessage: () => {
 
       if (lastJsonMessage) {
-        const variacao = Number.parseFloat(lastJsonMessage.quote.marketChange).toLocaleString('pt-br', {
-          minimumFractionDigits: 2,
-          currency: 'BRL'
-        })
-        const vlrAtual = Number.parseFloat(lastJsonMessage.quote.price).toLocaleString('pt-br', {
-          minimumFractionDigits: 2,
-          currency: 'BRL'
-        })
-        const vlrAbertura = Number.parseFloat(lastJsonMessage.quote.open).toLocaleString('pt-br', {
-          minimumFractionDigits: 2,
-          currency: 'BRL'
-        })
-        const vlrMaior = Number.parseFloat(lastJsonMessage.quote.high).toLocaleString('pt-br', {
-          minimumFractionDigits: 2,
-          currency: 'BRL'
-        })
-        const vlrMenor = Number.parseFloat(lastJsonMessage.quote.low).toLocaleString('pt-br', {
-          minimumFractionDigits: 2,
-          currency: 'BRL'
-        })
+        const variacao = lastJsonMessage.quote.marketChange
+        const vlrAtual = lastJsonMessage.quote.price
+        const vlrAbertura = lastJsonMessage.quote.open
+        const vlrMaior = lastJsonMessage.quote.high
+        const vlrMenor = lastJsonMessage.quote.low
         setId(lastJsonMessage.id);
         setTicker(lastJsonMessage.ticker);
         setVariacao(variacao);
