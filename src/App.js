@@ -11,7 +11,9 @@ function App() {
   const [vlrAbertura,setVlrAbertura] = useState(0);
   const [vlrMaior,setVlrMaior] = useState(0);
   const [vlrMenor,setVlrMenor] = useState(0);
-  const { lastJsonMessage, sendMessage } = useWebSocket('wss://ws-server-heroku.herokuapp.com/', {
+  const [status,setStatus] = useState(0);
+  const [atualizacao,setAtualizacao] = useState(0);
+  const { lastJsonMessage, sendMessage } = useWebSocket('ws://localhost:3000/', {
     onOpen: () => console.log(`Connected to App WS`),
     onMessage: () => {
 
@@ -21,6 +23,8 @@ function App() {
         const vlrAbertura = lastJsonMessage.quote.open
         const vlrMaior = lastJsonMessage.quote.high
         const vlrMenor = lastJsonMessage.quote.low
+        const status = lastJsonMessage.quote.stateTrading
+        const atualizacao = lastJsonMessage.quote.timeTrading
         setId(lastJsonMessage.id);
         setTicker(lastJsonMessage.ticker);
         setVariacao(variacao);
@@ -28,6 +32,8 @@ function App() {
         setVlrAbertura(vlrAbertura);
         setVlrMaior(vlrMaior);
         setVlrMenor(vlrMenor);
+        setStatus(status);
+        setAtualizacao(atualizacao);
       }
     },
     queryParams: { 'token': '123456' },
@@ -47,8 +53,10 @@ function App() {
             <th>Valor abertura</th>
             <th>Maior valor</th>
             <th>Menor valor</th>
+            <th>Status</th>
+            <th>Atualização</th>
           </tr>
-          {adicionaLinha('principal', id, ticker, variacao, vlrAtual, vlrAbertura, vlrMaior, vlrMenor)}
+          {adicionaLinha('principal', id, ticker, variacao, vlrAtual, vlrAbertura, vlrMaior, vlrMenor, status, atualizacao)}
         </table>
         <img src={logo} className="App-logo" alt="logo" />
         <p>
@@ -68,7 +76,7 @@ function App() {
 }
 
 //Funcao adiciona uma nova linha na tabela
-function adicionaLinha(idTabela, id, ticker, variacao, vlrAtual, vlrAbertura, vlrMaior, vlrMenor) {
+function adicionaLinha(idTabela, id, ticker, variacao, vlrAtual, vlrAbertura, vlrMaior, vlrMenor, status, atualizacao) {
   var tabela = document.getElementById(idTabela);
   var existRow = document.getElementById(id);
 
@@ -85,6 +93,8 @@ function adicionaLinha(idTabela, id, ticker, variacao, vlrAtual, vlrAbertura, vl
       var celVlrAbertura  = linha.insertCell(4);
       var celVlrMaior     = linha.insertCell(5);
       var celVlrMenor     = linha.insertCell(6);
+      var celStatus       = linha.insertCell(7);
+      var celAtualizacao  = linha.insertCell(8);
       celId.innerHTML = id;
       celTicker.innerHTML =  ticker;
       celVariacao.innerHTML = variacao;
@@ -97,6 +107,10 @@ function adicionaLinha(idTabela, id, ticker, variacao, vlrAtual, vlrAbertura, vl
       celVlrMaior.id = 'celVlrMaior'+'_'+id
       celVlrMenor.innerHTML =  vlrMenor;
       celVlrMenor.id = 'celVlrMenor'+'_'+id
+      celStatus.innerHTML =  status;
+      celStatus.id = 'celStatus'+'_'+id
+      celAtualizacao.innerHTML =  atualizacao;
+      celAtualizacao.id = 'celAtualizacao'+'_'+id
     }
   } else if (existRow) {
     var linha = document.getElementById(id);
@@ -161,6 +175,8 @@ function adicionaLinha(idTabela, id, ticker, variacao, vlrAtual, vlrAbertura, vl
     linha.childNodes[4].innerHTML = vlrAbertura;
     linha.childNodes[5].innerHTML =  vlrMaior;
     linha.childNodes[6].innerHTML =  vlrMenor;
+    linha.childNodes[7].innerHTML =  status;
+    linha.childNodes[8].innerHTML =  atualizacao;
   }
 }
 
