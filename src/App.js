@@ -13,7 +13,7 @@ function App() {
   const [vlrMenor,setVlrMenor] = useState(0);
   const [status,setStatus] = useState(0);
   const [atualizacao,setAtualizacao] = useState(0);
-  const { lastJsonMessage, sendMessage } = useWebSocket('ws://localhost:3000/', {
+  const { lastJsonMessage, sendMessage } = useWebSocket('wss://ws-server-heroku.herokuapp.com/', {
     onOpen: () => console.log(`Connected to App WS`),
     onMessage: () => {
 
