@@ -13,7 +13,7 @@ function App() {
   const [vlrMenor,setVlrMenor] = useState(0);
   const [status,setStatus] = useState(0);
   const [atualizacao,setAtualizacao] = useState(0);
-  const { lastJsonMessage, sendMessage } = useWebSocket('wss://ws-server-heroku.herokuapp.com/', {
+  const { lastJsonMessage, sendMessage } = useWebSocket('ws://localhost:3000/', {
     onOpen: () => console.log(`Connected to App WS`),
     onMessage: () => {
 
@@ -124,6 +124,13 @@ function adicionaLinha(idTabela, id, ticker, variacao, vlrAtual, vlrAbertura, vl
     const vAtuMai= Number.parseFloat(vlrMaior.replace(',','.')).toPrecision(4) ;
     const vAntMen = Number.parseFloat(linha.childNodes[6].innerHTML.replace(',','.')).toPrecision(4);
     const vAtuMen= Number.parseFloat(vlrMenor.replace(',','.')).toPrecision(4) ;
+
+    const dtAntAtu = Date.parse(linha.childNodes[8].innerHTML.toString(), 'HH:mm:ss');
+    const dAtuAtu= Date.parse(atualizacao);
+
+    alert(linha.childNodes[8].innerHTML.toString());
+    console.log(dAtuAtu);
+    console.log(dtAntAtu>=dAtuAtu);
 
     const objValVar = document.getElementById('celVariacao'+'_'+id);
     if(vAtuVar > 0) {
