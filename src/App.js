@@ -13,6 +13,7 @@ function App() {
   const [vlrMenor,setVlrMenor] = useState(0);
   const [status,setStatus] = useState(0);
   const [atualizacao,setAtualizacao] = useState(0);
+  //ws://localhost:3000/
   const { lastJsonMessage, sendMessage } = useWebSocket('wss://ws-server-heroku.herokuapp.com/', {
     onOpen: () => console.log(`Connected to App WS`),
     onMessage: () => {
@@ -83,7 +84,7 @@ function adicionaLinha(idTabela, id, ticker, variacao, vlrAtual, vlrAbertura, vl
   if(tabela && vlrAtual !== 0 && !existRow) {
       var numeroLinhas = tabela.rows.length;
 
-    if(id == 0 || numeroLinhas == id+1 ){
+    if(id === 0 || numeroLinhas === id+1 ){
       var linha = tabela.insertRow(numeroLinhas);
       linha.id = id;
       var celId           = linha.insertCell(0);
@@ -114,69 +115,84 @@ function adicionaLinha(idTabela, id, ticker, variacao, vlrAtual, vlrAbertura, vl
     }
   } else if (existRow) {
     var linha = document.getElementById(id);
-    const vAntVar = Number.parseFloat(linha.childNodes[2].innerHTML.replace(',','.')).toPrecision(4);
-    const vAtuVar = Number.parseFloat(variacao.replace(',','.')).toPrecision(4) ;
-    const vAntAtu = Number.parseFloat(linha.childNodes[3].innerHTML.replace(',','.')).toPrecision(4);
-    const vAtuAtu= Number.parseFloat(vlrAtual.replace(',','.')).toPrecision(4) ;
-    const vAntAbe = Number.parseFloat(linha.childNodes[4].innerHTML.replace(',','.')).toPrecision(4);
-    const vAtuAbe= Number.parseFloat(vlrAbertura.replace(',','.')).toPrecision(4) ;
-    const vAntMai = Number.parseFloat(linha.childNodes[5].innerHTML.replace(',','.')).toPrecision(4);
-    const vAtuMai= Number.parseFloat(vlrMaior.replace(',','.')).toPrecision(4) ;
-    const vAntMen = Number.parseFloat(linha.childNodes[6].innerHTML.replace(',','.')).toPrecision(4);
-    const vAtuMen= Number.parseFloat(vlrMenor.replace(',','.')).toPrecision(4) ;
+    const atualizacaoAnt= linha.childNodes[8].innerHTML.toString();
+    const isDateAnt = isData(atualizacaoAnt)
+    const isDateAtu = isData(atualizacao)
 
-    const objValVar = document.getElementById('celVariacao'+'_'+id);
-    if(vAtuVar > 0) {
-      objValVar.style.color ='rgb(34,139,34)';
-    }else if(vAtuVar == 0){
-      objValVar.style.color ='rgb(0,206,209)';
-    }else if (vAtuVar < 0) {
-      objValVar.style.color ='rgb(165,42,42)';
+    if (isDateAnt && isDateAtu) {
+      return
+    } else {
+      const moment = require('moment');
+      const timeAnt = moment(atualizacaoAnt, "HH:mm:ss");
+      const timeAtu = moment(atualizacao, "HH:mm:ss");
+
+      // if (timeAtu > timeAnt) {
+        const vAntVar = Number.parseFloat(linha.childNodes[2].innerHTML.replace(',','.')).toPrecision(4);
+        const vAtuVar = Number.parseFloat(variacao.replace(',','.')).toPrecision(4) ;
+        const vAntAtu = Number.parseFloat(linha.childNodes[3].innerHTML.replace(',','.')).toPrecision(4);
+        const vAtuAtu= Number.parseFloat(vlrAtual.replace(',','.')).toPrecision(4) ;
+        const vAntAbe = Number.parseFloat(linha.childNodes[4].innerHTML.replace(',','.')).toPrecision(4);
+        const vAtuAbe= Number.parseFloat(vlrAbertura.replace(',','.')).toPrecision(4) ;
+        const vAntMai = Number.parseFloat(linha.childNodes[5].innerHTML.replace(',','.')).toPrecision(4);
+        const vAtuMai= Number.parseFloat(vlrMaior.replace(',','.')).toPrecision(4) ;
+        const vAntMen = Number.parseFloat(linha.childNodes[6].innerHTML.replace(',','.')).toPrecision(4);
+        const vAtuMen= Number.parseFloat(vlrMenor.replace(',','.')).toPrecision(4) ;
+    
+    
+        const objValVar = document.getElementById('celVariacao'+'_'+id);
+        if(vAtuVar > 0) {
+          objValVar.style.color ='rgb(34,139,34)';
+        }else if(vAtuVar == 0){
+          objValVar.style.color ='rgb(0,206,209)';
+        }else if (vAtuVar < 0) {
+          objValVar.style.color ='rgb(165,42,42)';
+        }
+    
+        const objValAtu = document.getElementById('celVlrAtual'+'_'+id);
+        if(vAtuAtu > vAntAtu) {
+          objValAtu.style.color ='rgb(34,139,34)';
+        }else if( (vAtuAtu == vAntAtu) && (objValAtu.style.color != 'rgb(34, 139, 34)' && objValAtu.style.color != 'rgb(165, 42, 42)')){
+          objValAtu.style.color ='rgb(0,206,209)';
+        }else if (vAtuAtu < vAntAtu) {
+          objValAtu.style.color ='rgb(165,42,42)';
+        }
+    
+        const objValAbe = document.getElementById('celVlrAbertura'+'_'+id);
+        if(vAtuAbe > vAntAbe) {
+          objValAbe.style.color ='rgb(34,139,34)';
+        }else if( (vAtuAbe == vAntAbe) && (objValAbe.style.color != 'rgb(34, 139, 34)' && objValAbe.style.color != 'rgb(165, 42, 42)')){
+          objValAbe.style.color ='rgb(0,206,209)';
+        }else if (vAtuAbe < vAntAbe) {
+          objValAbe.style.color ='rgb(165,42,42)';
+        }
+    
+        const objValMai = document.getElementById('celVlrMaior'+'_'+id);
+        if(vAtuMai > vAntMai) {
+          objValMai.style.color ='rgb(34,139,34)';
+        }else if( (vAtuMai == vAntMai) && (objValMai.style.color != 'rgb(34, 139, 34)' && objValMai.style.color != 'rgb(165, 42, 42)')){
+          objValMai.style.color ='rgb(0,206,209)';
+        }else if (vAtuMai < vAntMai) {
+          objValMai.style.color ='rgb(165,42,42)';
+        }
+    
+        const objValMen = document.getElementById('celVlrMenor'+'_'+id);
+        if(vAtuMen > vAntMen) {
+          objValMen.style.color ='rgb(34,139,34)';
+        }else if( (vAtuMen == vAntMen) && (objValMen.style.color != 'rgb(34, 139, 34)' && objValMen.style.color != 'rgb(165, 42, 42)')){
+          objValMen.style.color ='rgb(0,206,209)';
+        }else if (vAtuMen < vAntMen) {
+          objValMen.style.color ='rgb(165,42,42)';
+        }
+    
+        linha.childNodes[2].innerHTML =  variacao;
+        linha.childNodes[3].innerHTML =  vlrAtual;
+        linha.childNodes[4].innerHTML = vlrAbertura;
+        linha.childNodes[5].innerHTML =  vlrMaior;
+        linha.childNodes[6].innerHTML =  vlrMenor;
+        linha.childNodes[7].innerHTML =  status;
+        linha.childNodes[8].innerHTML =  atualizacao;
+      // }
     }
-
-    const objValAtu = document.getElementById('celVlrAtual'+'_'+id);
-    if(vAtuAtu > vAntAtu) {
-      objValAtu.style.color ='rgb(34,139,34)';
-    }else if( (vAtuAtu == vAntAtu) && (objValAtu.style.color != 'rgb(34, 139, 34)' && objValAtu.style.color != 'rgb(165, 42, 42)')){
-      objValAtu.style.color ='rgb(0,206,209)';
-    }else if (vAtuAtu < vAntAtu) {
-      objValAtu.style.color ='rgb(165,42,42)';
-    }
-
-    const objValAbe = document.getElementById('celVlrAbertura'+'_'+id);
-    if(vAtuAbe > vAntAbe) {
-      objValAbe.style.color ='rgb(34,139,34)';
-    }else if( (vAtuAbe == vAntAbe) && (objValAbe.style.color != 'rgb(34, 139, 34)' && objValAbe.style.color != 'rgb(165, 42, 42)')){
-      objValAbe.style.color ='rgb(0,206,209)';
-    }else if (vAtuAbe < vAntAbe) {
-      objValAbe.style.color ='rgb(165,42,42)';
-    }
-
-    const objValMai = document.getElementById('celVlrMaior'+'_'+id);
-    if(vAtuMai > vAntMai) {
-      objValMai.style.color ='rgb(34,139,34)';
-    }else if( (vAtuMai == vAntMai) && (objValMai.style.color != 'rgb(34, 139, 34)' && objValMai.style.color != 'rgb(165, 42, 42)')){
-      objValMai.style.color ='rgb(0,206,209)';
-    }else if (vAtuMai < vAntMai) {
-      objValMai.style.color ='rgb(165,42,42)';
-    }
-
-    const objValMen = document.getElementById('celVlrMenor'+'_'+id);
-    if(vAtuMen > vAntMen) {
-      objValMen.style.color ='rgb(34,139,34)';
-    }else if( (vAtuMen == vAntMen) && (objValMen.style.color != 'rgb(34, 139, 34)' && objValMen.style.color != 'rgb(165, 42, 42)')){
-      objValMen.style.color ='rgb(0,206,209)';
-    }else if (vAtuMen < vAntMen) {
-      objValMen.style.color ='rgb(165,42,42)';
-    }
-
-    linha.childNodes[2].innerHTML =  variacao;
-    linha.childNodes[3].innerHTML =  vlrAtual;
-    linha.childNodes[4].innerHTML = vlrAbertura;
-    linha.childNodes[5].innerHTML =  vlrMaior;
-    linha.childNodes[6].innerHTML =  vlrMenor;
-    linha.childNodes[7].innerHTML =  status;
-    linha.childNodes[8].innerHTML =  atualizacao;
   }
 }
 
@@ -184,6 +200,14 @@ function adicionaLinha(idTabela, id, ticker, variacao, vlrAtual, vlrAbertura, vl
 function removeLinha(linha) {
   var i=linha.parentNode.parentNode.rowIndex;
   document.getElementById('tbl').deleteRow(i);
+}
+
+function isData(input) {
+  // Define a expressão regular para procurar o caractere "/"
+  const regex = /\//;
+  
+  // Testa se a string contém o caractere "/"
+  return regex.test(input);
 }
 
 export default App;
