@@ -14,6 +14,7 @@ function App() {
   const [status,setStatus] = useState(0);
   const [atualizacao,setAtualizacao] = useState(0);
   //ws://localhost:3000/
+  //wss://ws-server-heroku.herokuapp.com/
   const { lastJsonMessage, sendMessage } = useWebSocket('wss://ws-server-heroku.herokuapp.com/', {
     onOpen: () => console.log(`Connected to App WS`),
     onMessage: () => {
@@ -45,7 +46,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <table id="principal" border="1" width="50%" class="table">
+        <table id="principal" border="1" width="80%" class="table">
           <tr>
             <th>Id</th>
             <th>Código</th>
