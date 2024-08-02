@@ -124,10 +124,10 @@ function adicionaLinha(idTabela, id, ticker, variacao, vlrAtual, vlrAbertura, vl
       return
     } else {
       const moment = require('moment');
-      const timeAnt = moment(atualizacaoAnt, "HH:mm:ss");
-      const timeAtu = moment(atualizacao, "HH:mm:ss");
+      const timeAnt = moment(atualizacaoAnt, "HH:mm");
+      const timeAtu = moment(atualizacao, "HH:mm");
 
-      // if (timeAtu > timeAnt) {
+      if (timeAtu > timeAnt) {
         const vAntVar = Number.parseFloat(linha.childNodes[2].innerHTML.replace(',','.')).toPrecision(4);
         const vAtuVar = Number.parseFloat(variacao.replace(',','.')).toPrecision(4) ;
         const vAntAtu = Number.parseFloat(linha.childNodes[3].innerHTML.replace(',','.')).toPrecision(4);
@@ -192,7 +192,7 @@ function adicionaLinha(idTabela, id, ticker, variacao, vlrAtual, vlrAbertura, vl
         linha.childNodes[6].innerHTML =  vlrMenor;
         linha.childNodes[7].innerHTML =  status;
         linha.childNodes[8].innerHTML =  atualizacao;
-      // }
+      }
     }
   }
 }
