@@ -20,6 +20,8 @@ function App() {
     onMessage: () => {
 
       if (lastJsonMessage) {
+        // alert("lastJsonMessage: "+lastJsonMessage.quote);
+        const order = lastJsonMessage.quote.order
         const variacao = lastJsonMessage.quote.marketChange
         const vlrAtual = lastJsonMessage.quote.price
         const vlrAbertura = lastJsonMessage.quote.open
@@ -27,7 +29,7 @@ function App() {
         const vlrMenor = lastJsonMessage.quote.low
         const status = lastJsonMessage.quote.stateTrading
         const atualizacao = lastJsonMessage.quote.timeTrading
-        setId(lastJsonMessage.id);
+        setId(order);
         setTicker(lastJsonMessage.ticker);
         setVariacao(variacao);
         setVlrAtual(vlrAtual);
@@ -48,7 +50,7 @@ function App() {
       <header className="App-header">
         <table id="principal" border="1" width="80%" class="table">
           <tr>
-            <th>Id</th>
+            <th>Ordem</th>
             <th>Código</th>
             <th>%</th>
             <th>Valor atual</th>
@@ -85,7 +87,7 @@ function adicionaLinha(idTabela, id, ticker, variacao, vlrAtual, vlrAbertura, vl
   if(tabela && vlrAtual !== 0 && !existRow) {
       var numeroLinhas = tabela.rows.length;
 
-    if(id === 0 || numeroLinhas === id+1 ){
+    if(id === 0 || numeroLinhas === id ){
       var linha = tabela.insertRow(numeroLinhas);
       linha.id = id;
       var celId           = linha.insertCell(0);
